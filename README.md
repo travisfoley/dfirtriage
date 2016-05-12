@@ -31,11 +31,12 @@ Contents:
    - compiled executable
  + core.ir
    - tool set repository (required)
+ + manifest.txt
+   - hash list for core components
+ + unlicense.txt
+   - copy of license agreement
  + source directory
    - DFIRTriage-pub_2.4.py
- + docs directory
-   - manifest.txt (hash list for core components)
-   - unlicense.txt (copy of license agreement)
 
 Operation:
 DFIRTriage acquires data from the host on which it is executed. For acquisitions of remote hosts, the DFIRTriage files will need to be copied to the target, then executed via remote shell. (ie. SSH or PSEXEC)  
