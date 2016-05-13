@@ -221,7 +221,7 @@ if os.path.exists("c:\windows\system32\\"):
 	# variable to point to the location of "xcopy" on the remote system
 	XcopyDir = "c:\windows\system32\\"
 	# setting up variables to run xcopy with appropriate parameters
-	XcopyParam = XcopyDir + "xcopy.exe /s/e/h/i C:\Windows\Prefetch\*.pf "
+	XcopyParam = XcopyDir + "xcopy.exe /s/e/h/i/k C:\Windows\Prefetch\*.pf "
 	XcopyOut = CaseFolder + "\LiveResponseData\Prefetch"
 	XcopyPF = XcopyParam + XcopyOut
 
@@ -1015,7 +1015,7 @@ if os.path.exists("c:\windows\system32\\"):
 	# variable to point to the location of "xcopy" on the remote system
 	XcopyDir = "c:\windows\system32\\"
 	# setting up variables to run xcopy with appropriate parameters
-	XcopyParam = XcopyDir + "xcopy.exe C:\Windows\inf\setupapi.dev.log "
+	XcopyParam = XcopyDir + "xcopy.exe /k C:\Windows\inf\setupapi.dev.log "
 	XcopyOut = CaseFolder + "\LiveResponseData\Registry\usb-install-log"
 	XcopyUsb = XcopyParam + XcopyOut
 
