@@ -1,4 +1,4 @@
-# dfirtriage
+# **dfirtriage**
 Digital forensic acquisition tool for Windows based incident response.
 
 How to Use
@@ -7,18 +7,22 @@ To run, place dfirtriage.exe and core.ir in the same directory on the target and
 
 ***************************************************************************************
 
-DFIRTriage v2.4 User's Manual
+**DFIRTriage v2.4 User's Manual**
 =
+
 Description
--
+-----------
+
 This document outlines the functionality and proper use of the DFIRTriage tool. Also included is detailed information to help with analysis of the output.  
 
 About
--
+-----
+
 DFIRTriage is a python script intended to provide Incident Responders with rapid host data. The python code has been compiled to eliminate the dependency of python on the target host. The tool will run a variety of commands automatically upon execution. The acquired data will reside in the root of the execution directory. DFIRTriage may be ran from a USB drive or executed in remote shell on the target. Windows-only support. 
 
 What’s New?
--
+-----------
+
  * MD5 integrity check
  * Debug mode to bypass code blocks that perform lengthier analysis to speed up script testing.
  * Parsing out specific event log entries. This code has been written so it is easy to add or remove event IDs for future modifications. 
@@ -50,22 +54,27 @@ DFIRTriage acquires data from the host on which it is executed. For acquisitions
 
 PSEXEC Usage
 -
-WARNING: Do not use PSEXEC arguments to pass credentials to a remote system for authentication. Doing so will send your username and password across the network in the clear.  
+*WARNING: Do not use PSEXEC arguments to pass credentials to a remote system for authentication. Doing so will send your username and password across the network in the clear.*  
 
-The following steps should be taken for proper usage of PSEXEC: 
-1. Map a network drive and authenticate with an account that has local administrative privileges on the target host. 
-   a. You can used this mapped connection to copy the DFIRTriage zip file over to the target host and extract the files to a temp directory. 
-2. We can now shovel a remote shell to the target host using PSEXEC. 
-   psexec \\<target_host> cmd 
-3. You now have a remote shell on the target. All commands executed at this point are done so on the target host. 
+**The following steps should be taken for proper usage of PSEXEC** 
+
+ 1. Map a network drive and authenticate with an account that has local administrative privileges on the target host.
+> You can used this mapped connection to copy the DFIRTriage zip file
+> over to the target host and extract the files to a temp directory.
+
+ 2. We can now shovel a remote shell to the target host using PSEXEC.
+
+    psexec \\\\target_host cmd
+
+ 3. You now have a remote shell on the target. All commands executed at this point are done so on the target host. 
 
 
 Usage
--
 
-1. Once the remote shell has been established on the target you can change directory to the location of the extracted DFIRTriage.exe file and execute.  
+ 1. Once the remote shell has been established on the target you can change directory to the location of the extracted DFIRTriage.exe file and execute. 
 
-NOTE: If running locally and physically at the console of a workstation, DFIRTriage must be executed with Administrative privileges.
+    > NOTE: If running locally and physically at the console of a workstation, DFIRTriage must be executed with Administrative
+    > privileges.
 
 2. Immediately after execution, you will be prompted for memory acquisition.
 3. Press “y” or “n” and then hit ENTER to continue. 
@@ -82,65 +91,65 @@ Artifacts List
 =
 The following is a general listing of the information and artifacts gathered.  
 
+* **Memory Raw** --> image acquisition (optional) 
 
-* Memory Raw --> image acquisition (optional) 
+* **Prefetch** --> Collects all prefetch files an parses into a report 
 
-* Prefetch --> Collects all prefetch files an parses into a report 
+* **User activity** --> HTML report of recent user activity 
 
-* User activity --> HTML report of recent user activity 
+* **System32 file hash** --> MD5 hash of all files in root of System32 
 
-* System32 file hash --> MD5 hash of all files in root of System32 
+* **Network information** --> Network configuration, routing tables, etc 
 
-* Network information --> Network configuration, routing tables, etc 
+* **Extended process lis**t --> Processes, PID, and image path 
 
-* Extended process list --> Processes, PID, and image path 
+* **Windows character code page information** --> Character set that Windows is using 
 
-* Windows character code page information --> Character set that Windows is using 
+* **Complete file listing** --> Full list of all files on the system partition 
 
-* Complete file listing --> Full list of all files on the system partition 
+* **List of hidden directories** --> List of all hidden directories on the system partition 
 
-* List of hidden directories --> List of all hidden directories on the system partition 
+* **Current user information** --> User running DFIRTriage script 
 
-* Current user information --> User running DFIRTriage script 
+* **System information** --> Build, service pack level, installed patches, etc 
 
-* System information --> Build, service pack level, installed patches, etc 
+* **Windows version** --> Logs the version number of the target OS 
 
-* Windows version --> Logs the version number of the target OS 
+* **Current date and time** --> Current system date and time 
 
-* Current date and time --> Current system date and time 
+* **List of scheduled tasks** --> List of all configured scheduled tasks 
 
-* List of scheduled tasks --> List of all configured scheduled tasks 
+* **Loaded processes and dlls** --> List of all running processes and loaded dlls 
 
-* Loaded processes and dlls --> List of all running processes and loaded dlls 
+* **Running processes** --> Additional information on running processes 
 
-* Running processes --> Additional information on running processes 
+* **Network configuration** --> Network adaptor configuration 
 
-* Network configuration --> Network adaptor configuration 
+* **Network connections** --> Established network connections 
 
-* Network connections --> Established network connections 
+* **Open TCP/UDP ports** --> Active open TCP or UDP ports 
 
-* Open TCP/UDP ports --> Active open TCP or UDP ports 
+* **DNS cache entries** --> List of complete DNS cache contents 
 
-* DNS cache entries --> List of complete DNS cache contents 
+* **ARP table information** --> List of complete ARP cache contents 
 
-* ARP table information --> List of complete ARP cache contents 
+* **Local user account names** --> List of local user accounts 
 
-* Local user account names --> List of local user accounts 
+* **NetBIOS information** --> Active NetBIOS sessions, transferred files, etc 
 
-* NetBIOS information --> Active NetBIOS sessions, transferred files, etc 
+* **Installed software** --> List of all installed software through WMI 
 
-* Installed software --> List of all installed software through WMI 
+* **Autorun information** --> All autorun locations and content 
 
-* Autorun information --> All autorun locations and content 
+* **List of remotely opened files** --> Files on target system opened by remote hosts 
 
-* List of remotely opened files --> Files on target system opened by remote hosts 
+* **Logged on users** --> All users currently logged on to target system 
 
-* Logged on users --> All users currently logged on to target system 
+* **Alternate Data Streams** --> List of files containing alternate data streams 
 
-* Alternate Data Streams --> List of files containing alternate data streams 
+* **Registry hives** --> Copy of all registry hives 
 
-* Registry hives --> Copy of all registry hives 
+* **USB artifacts** --> Collects data needed to parse USB usage info 
 
-* USB artifacts --> Collects data needed to parse USB usage info 
+* **Hash of all collected triage data** --> MD5 hash of all data collected by DFIRTriage 
 
-* Hash of all collected triage data --> MD5 hash of all data collected by DFIRTriage 
