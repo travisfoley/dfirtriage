@@ -31,8 +31,8 @@
 ## information for use with initial Incident Response.                     ##
 ##                                                                         ##
 ## FILENAME: DFIRTriage.py                                                 ##
-## LAST MODIFIED: 4-20-16                                                  ##
-## VERSION: 2.4                                                            ##
+## LAST MODIFIED: 5-13-16                                                  ##
+## VERSION: 2.4.1                                                          ##
 ## STATUS: PUBLIC                                                          ##
 ##                                                                         ##
 ##                                                                         ##
@@ -68,7 +68,7 @@ print "#  |   \| |_ |_ _| _ \  |_   _|((_|_|(_)_ (()(_|_))   #"
 print "#  | |) | __| | ||   /    | | | '_| / _` / _` |/ -_)  #"
 print "#  |___/|_|  |___|_|_\    |_| |_| |_\__,_\__, |\___|  #"
 print "#                                        |___/        #"
-print "#                    Version 2.4                      #"
+print "#                  Version 2.4.1                      #"
 print "#                                                     #"
 print "#######################################################"
 
@@ -1113,7 +1113,7 @@ print "#  |   \| |_ |_ _| _ \  |_   _|((_|_|(_)_ (()(_|_))   #"
 print "#  | |) | __| | ||   /    | | | '_| / _` / _` |/ -_)  #"
 print "#  |___/|_|  |___|_|_\    |_| |_| |_\__,_\__, |\___|  #"
 print "#                                        |___/        #"
-print "#                    Version 2.4                      #"
+print "#                  Version 2.4.1                      #"
 print "#                                                     #"
 print "#######################################################"
 print
