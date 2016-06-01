@@ -23,6 +23,10 @@ import subprocess
 import shutil
 import zipfile
 import hashlib
+import argparse
+
+parser = argparse.ArgumentParser(description='First Responder acquisition of Windows system & user artifacts for IR.')
+args = parser.parse_args()
 
 debugMode = "off"
 
