@@ -30,9 +30,9 @@
 ## DESCRIPTION: Forensic acquisition of volatile data and system           ##
 ## information for use with initial Incident Response.                     ##
 ##                                                                         ##
-## FILENAME: DFIRTriage.py                                                 ##
-## LAST MODIFIED: 4-20-16                                                  ##
-## VERSION: 2.4                                                            ##
+## FILENAME: DFIRTriage-pub_2.4.1.py                                       ##
+## LAST MODIFIED: 2-27-17                                                  ##
+## VERSION: 2.4.1                                                          ##
 ## STATUS: PUBLIC                                                          ##
 ##                                                                         ##
 ##                                                                         ##
@@ -68,7 +68,7 @@ print "#  |   \| |_ |_ _| _ \  |_   _|((_|_|(_)_ (()(_|_))   #"
 print "#  | |) | __| | ||   /    | | | '_| / _` / _` |/ -_)  #"
 print "#  |___/|_|  |___|_|_\    |_| |_| |_\__,_\__, |\___|  #"
 print "#                                        |___/        #"
-print "#                    Version 2.4                      #"
+print "#                  Version 2.4.1                      #"
 print "#                                                     #"
 print "#######################################################"
 
@@ -137,12 +137,24 @@ else:
 		print
 		print "[+] Done."
 
-# Prompt for memory acquisition
+# Are we collecting memory?
 
-print
-print "Do you want to acquire memory? (y | n)"
-memCollection = raw_input()
-print
+def mem_coll_prompt():
+    global memCollection
+    if len(sys.argv) != 2:
+        print "Do you want to acquire memory? (y | n)"
+        memCollection = raw_input()
+    else:
+        if sys.argv[1] == "-mem":
+            memCollection = "y"
+            print "[+] Memory collection ENABLED."
+            print
+        else:
+            memCollection = "n"
+            print "[+] Memory collection DISABLED."
+            print
+mem_coll_prompt()
+
 
 # [END] OS and Arch Detection
 
@@ -185,6 +197,7 @@ os.makedirs(CaseFolder+'/LiveResponseData/FileSystem')
 
 
 # [BEGIN] Memory acquisition
+
 if memCollection == "y":
     print "[+] Memory acquisition..."
     print
@@ -205,8 +218,6 @@ if memCollection == "y":
     os.rename(os.path.realpath('.') + "/" + "memdump.raw", CaseFolder + "/ForensicImages/Memory" + "/" + "memdump.raw")
 
 else:
-    print
-    print "[+] Skipping memory acquisition..."
     print
 
 # [END] Memory acquisition
@@ -1113,9 +1124,13 @@ print "#  |   \| |_ |_ _| _ \  |_   _|((_|_|(_)_ (()(_|_))   #"
 print "#  | |) | __| | ||   /    | | | '_| / _` / _` |/ -_)  #"
 print "#  |___/|_|  |___|_|_\    |_| |_| |_\__,_\__, |\___|  #"
 print "#                                        |___/        #"
-print "#                    Version 2.4                      #"
+print "#                  Version 2.4.1                      #"
 print "#                                                     #"
 print "#######################################################"
+
 print
-print "[*] DFIRTriage process is now complete. \n\n::::::::::::::::::::::::::::::::::::::::::::::::::::::\n\n Press ENTER to finish. \n\n"
-raw_input()
+print
+print "[*] DFIRTriage process is now complete."
+print
+print
+print "::::::::::::::::::::::::::::::::::::::::::::::::::::::"
