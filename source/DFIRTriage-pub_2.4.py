@@ -7,10 +7,10 @@
 ##                                                                         ##
 ## License: Unlicense (http://unlicense.org)                               ##
 ##                                                                         ##
-## Version: 2.4                                                            ##
+## Version: 2.4.1                                                          ##
 ## Filename: DFIRTriage.py                                                 ##
 ## Author: Travis Foley, travis.foley@gmail.com                            ##
-## Last modified: : 4-20-16                                                ##
+## Last modified: : 2-27-17                                                ##
 ##                                                                         ##
 #############################################################################
 
@@ -23,10 +23,10 @@ import subprocess
 import shutil
 import zipfile
 import hashlib
-import argparse
+#import argparse
 
-parser = argparse.ArgumentParser(description='First Responder acquisition of Windows system & user artifacts for IR.')
-args = parser.parse_args()
+#  parser = argparse.ArgumentParser(description='First Responder acquisition of Windows system & user artifacts for IR.')
+#  args = parser.parse_args()
 
 debugMode = "off"
 
@@ -117,12 +117,23 @@ else:
 		print
 		print "[+] Done."
 
-# Prompt for memory acquisition
+# Are we collecting memory?
 
-print
-print "Do you want to acquire memory? (y | n)"
-memCollection = raw_input()
-print
+def mem_coll_prompt():
+    global memCollection
+    if len(sys.argv) != 2:
+        print "Do you want to acquire memory? (y | n)"
+        memCollection = raw_input()
+    else:
+        if sys.argv[1] == "-mem":
+            memCollection = "y"
+            print "[+] Memory collection ENABLED."
+            print
+        else:
+            memCollection = "n"
+            print "[+] Memory collection DISABLED."
+            print
+mem_coll_prompt()
 
 # [END] OS and Arch Detection
 
@@ -185,8 +196,6 @@ if memCollection == "y":
     os.rename(os.path.realpath('.') + "/" + "memdump.raw", CaseFolder + "/ForensicImages/Memory" + "/" + "memdump.raw")
 
 else:
-    print
-    print "[+] Skipping memory acquisition..."
     print
 
 # [END] Memory acquisition
