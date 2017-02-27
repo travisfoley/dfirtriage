@@ -6,7 +6,6 @@ CRC32             : 839F85D6
 SHA-256           : 77EB4F98149B875A50750412B57F53325A9A20639AA774AA55D0B5DA25E05A2C
 SHA-512           : 00315CE472A3EF56E54FC7BBE204629D45D53709572359CF0E69598CB719E5C93F950DD3DBFF6C87D0A06C1DCA82BC471B65443A4E5A9EDB2565E188B207D6F7
 SHA-384           : A11D7DBD362DE61FC6E2553CDEB0BB492CBEBAD5F16524403281E9E452172D375692A1065885A41C71A8988C29C26BEA
-Full Path         : C:\Users\Travis\PycharmProjects\DFIRTriage\PROD\DFIRTriage-pub\2.4\core.ir
 Modified Time     : 4/12/2016 8:12:01 AM
 Created Time      : 4/20/2016 12:29:01 PM
 File Size         : 13,731,475
@@ -19,16 +18,15 @@ File Attributes   : A
 
 ==================================================
 Filename          : DFIRTriage.exe
-MD5               : A59B660556B3870876A7FF58F2AF3B71
-SHA1              : 099A504037F29B95246D11562EBFBC5C520DA847
-CRC32             : 00D290EC
-SHA-256           : C305F9368E36E294BE8B6DB573701AB514CED32B4FFC54133DF47467BF1913CA
-SHA-512           : CC9FCF954889DBF982333425735FA18E0BB803BD54B1332A1198812F7D7743B47F120146798AA525EAB7BACDD0BF7E0B3D7B38052D5BC1F5EC49267E047A5CB9
-SHA-384           : CE263F11EFB07A153DA5A6BC136B473CC21BE50344959E617AA84A8E8EB9B7AE82BB1E4A066554AFBC237F867C28BE9C
-Full Path         : C:\Users\Travis\PycharmProjects\DFIRTriage\PROD\DFIRTriage-pub\2.4\DFIRTriage.exe
-Modified Time     : 4/20/2016 12:27:40 PM
-Created Time      : 4/20/2016 12:28:08 PM
-File Size         : 3,195,974
+MD5               : bf931c3720a84e88ba98ed3696b4bede
+SHA1              : 767aed148fe439e6eb8e9e5c9ed7475f62ca9554
+CRC32             : be55c63d
+SHA-256           : f4c273186a00e1c17a6e826fa17fdf565d940831004a6bb2579cffa90b12e668
+SHA-512           : 0aed3bba3ed9d8385de0f9cd477c74bdd64ed012790c5a83af9d13a97e33377c98d941e753a9e972490959c5cdaef13207dc2a6973c31ee28c01a989dcd5f856
+SHA-384           : c2f481ffcb6f64f842bff1f648696173aa4ed9bdd8e3f54cca41bb2b66e677fcc02999ad106be141223f7d928db774db
+Modified Time     : 2/27/2017 9:33:24 AM
+Created Time      : 2/27/2017 9:28:25 AM
+File Size         : 4,180,823
 File Version      : 
 Product Version   : 
 Identical         : 
@@ -37,17 +35,16 @@ File Attributes   : A
 ==================================================
 
 ==================================================
-Filename          : DFIRTriage-pub_2.4.py
-MD5               : 506d956e897fdfab74b723b2a5355fc4
-SHA1              : 4f67ba883cdc84d0342266d636a6598ad3ab0295
-CRC32             : 2faf303c
-SHA-256           : ede7661f21e579cd7ab008463b36f66ca8bca1774cad181c68bc698a01d8d290
-SHA-512           : 08b65ede0131add8a370a2e295c96c62a960474043b31e873bb48683885fbc856c7db48cfb375fd33a3ac05a30a765669596f7922b3ffa9e6a95f5999ebb6a32
-SHA-384           : 3f4d7200ae73283dc2c5771af919212422d808d835bbaa930500ab7430eeb876d0320b4b4dd80dcce2f238541e1ff16a
-Full Path         : C:\Users\E384QT\Desktop\DFIRTriage Current Production\DFIRTriage_v2.4_PUB\source\DFIRTriage-pub_2.4.py
-Modified Time     : 4/20/2016 3:18:02 PM
-Created Time      : 4/20/2016 12:20:29 PM
-File Size         : 43,783
+Filename          : DFIRTriage-pub_2.4.1.py
+MD5               : 496898e5f54f044a3ffa8c55d7e3cfc8
+SHA1              : b5d7cfe3b2be7399ea60160c9becd9750c8be549
+CRC32             : 8b50abaf
+SHA-256           : 248697ba799de520ffe46de9b2faca300e8794f25c422e6e6be0b22ff35a8e6c
+SHA-512           : 2983c32c9f21394ace839aa4c079e3f0bddd19d0e299df220a25ae1d78bb44effcef6778a7b7a8a952a66c6946beeb0385d81aee1885d5e90a6df8a083a272a6
+SHA-384           : af677821fdee5ea2982d4d27ae321f8c95b2f9cf1143de5fa59207e91a367df49774e0597bf5f8fd290839631be710b8
+Modified Time     : 2/27/2017 9:32:53 AM
+Created Time      : 2/27/2017 9:22:33 AM
+File Size         : 44,093
 File Version      : 
 Product Version   : 
 Identical         : 
