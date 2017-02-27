@@ -7,7 +7,7 @@ To run, place dfirtriage.exe and core.ir in the same directory on the target and
 
 ***************************************************************************************
 
-**DFIRTriage v2.4 User's Manual**
+**DFIRTriage v2.4.1 User's Manual**
 =
 
 Description
@@ -23,17 +23,11 @@ DFIRTriage is a python script intended to provide Incident Responders with rapid
 What’s New?
 -----------
 
- * MD5 integrity check
- * Debug mode to bypass code blocks that perform lengthier analysis to speed up script testing.
- * Parsing out specific event log entries. This code has been written so it is easy to add or remove event IDs for future modifications. 
-   We are now parsing out 15 specific events from the Event logs. These events are indicate remote connections, possible lateral movement,    privilege escalation, service creation, scheduled tasks for possible persistence, and program installation.
- * Console color has been added to help differentiate between normal, warning, and error states. (Applies to local execution only)
- * Corrected issues with alternate data stream location code
- * Parsing registry hives 
+ * Command-line argument support for automation
 
 Dependencies
 -
-The tool repository contains the full toolset required for proper execution and is packed into a single a single file named “core.ir”. This “.ir” file is the only required dependency of DFIRTriage. DFIRTriage is packaged in a zip archived with the following naming convention – “DFIRTriage-pub_2.4.zip”, which contains all of the files required for normal operation.  Please note that the demo version of select TZWorks tools are used in the public release of DFIRTriage. Licensed copies may be purchased at www.tzworks.com. 
+The tool repository contains the full toolset required for proper execution and is packed into a single a single file named “core.ir”. This “.ir” file is the only required dependency of DFIRTriage. DFIRTriage is packaged in a zip archived with the following naming convention – “DFIRTriage-pub_2.4.1.zip”, which contains all of the files required for normal operation.  Please note that the demo version of select TZWorks tools are used in the public release of DFIRTriage. Licensed copies may be purchased at www.tzworks.com. 
 
 Contents
 -
@@ -46,7 +40,7 @@ Contents
  * unlicense.txt
    - copy of license agreement
  * source directory
-   - DFIRTriage-pub_2.4.py
+   - DFIRTriage-pub_2.4.1.py
 
 Operation
 -
@@ -76,8 +70,9 @@ Usage
     > NOTE: If running locally and physically at the console of a workstation, DFIRTriage must be executed with Administrative
     > privileges.
 
-2. Immediately after execution, you will be prompted for memory acquisition.
-3. Press “y” or “n” and then hit ENTER to continue. 
+2. Memory acquisition is controlled by command line arguments. To force memory collection with no prompt, the "-mem" argument shoudl be passed. To bypass memory collecdtion, the "-nomem" argument should be passed. If no argument is passed, the script will prompt the user for memory collection.
+
+3. If prompted for memory collectdion, press “y” or “n” and then hit ENTER to continue. 
 
 Output Analysis
 -
