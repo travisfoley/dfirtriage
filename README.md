@@ -49,7 +49,7 @@ Contents
  * .\data\core.ir
    - tool set repository (required for Python version only)
  * manifest.txt
-   - hash list for core components
+   - file hashes for core components
  * unlicense.txt
    - copy of license agreement
  * source directory
