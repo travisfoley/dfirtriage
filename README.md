@@ -3,11 +3,11 @@ Digital forensic acquisition tool for Windows based incident response.
 
 How to Use
 =
-To run, place dfirtriage.exe and core.ir in the same directory on the target and execute dfirtriage.exe with admin rights. 
+To run, drop dfirtriage.exe on the target and execute with admin rights. 
 
 ***************************************************************************************
 
-**DFIRTriage v2.4.1 User's Manual**
+**DFIRTriage v3.0.0 User's Manual**
 =
 
 Description
@@ -18,29 +18,42 @@ This document outlines the functionality and proper use of the DFIRTriage tool. 
 About
 -----
 
-DFIRTriage is a python script intended to provide Incident Responders with rapid host data. The python code has been compiled to eliminate the dependency of python on the target host. The tool will run a variety of commands automatically upon execution. The acquired data will reside in the root of the execution directory. DFIRTriage may be ran from a USB drive or executed in remote shell on the target. Windows-only support. 
+DFIRTriage is a tool intended to provide Incident Responders with rapid host data. Written in Python, the code has been compiled to eliminate the dependency of python on the target host. The tool will run a variety of commands automatically upon execution. The acquired data will reside in the root of the execution directory. DFIRTriage may be ran from a USB drive or executed in remote shell on the target. Windows-only support. 
 
 What’s New?
 -----------
 
- * Command-line argument support for automation
+ * No dependencies. DFIRTriage 3.0 is now a self-contained executable. All dependencies required with previous versions have been eliminated.
+ 
+ * Prompt removed, new command line options available.
+     The following options are available when runnning from the commandline:  
+
+        (-m) Executes all options and acquires memory
+
+        (-ho) Only hashes files on the target, no other operations are performed
+
+        (-bo) Only collects browser history information, no other operations are performed
+
+        (-h) Shows help message
+
+        (none) Running with no option (e.g. double-click) will execute all options except for memory acquisition
 
 Dependencies
 -
-The tool repository contains the full toolset required for proper execution and is packed into a single a single file named “core.ir”. This “.ir” file is the only required dependency of DFIRTriage. DFIRTriage is packaged in a zip archived with the following naming convention – “DFIRTriage-pub_2.4.1.zip”, which contains all of the files required for normal operation.  Please note that the demo version of select TZWorks tools are used in the public release of DFIRTriage. Licensed copies may be purchased at www.tzworks.com. 
+The tool repository contains the full toolset required for proper execution and is packed into a single a single file named “core.ir”. This “.ir” file is the only required dependency of DFIRTriage when running in Python and should reside in a directory named data, (ie. "./data/core.ir").  The compiled version of DFIRTriage now has the tools file embedded and does not require the addition of the "./data/core.ir" file.  Please note that the demo version of select TZWorks tools are used in the public release of DFIRTriage. Licensed copies may be purchased at www.tzworks.com. 
 
 Contents
 -
  * DFIRTriage.exe 
    - compiled executable
- * core.ir
-   - tool set repository (required)
+ * .\data\core.ir
+   - tool set repository (required for Python version only)
  * manifest.txt
    - hash list for core components
  * unlicense.txt
    - copy of license agreement
  * source directory
-   - DFIRTriage-pub_2.4.1.py
+   - DFIRTriage3.0.0_PUB.py
 
 Operation
 -
@@ -65,18 +78,16 @@ PSEXEC Usage
 
 Usage
 
- 1. Once the remote shell has been established on the target you can change directory to the location of the extracted DFIRTriage.exe file and execute. 
+1. Once the remote shell has been established on the target you can change directory to the location of the extracted DFIRTriage.exe file and execute. 
 
-    > NOTE: If running locally and physically at the console of a workstation, DFIRTriage must be executed with Administrative
-    > privileges.
+2. Memory acquisition is controlled by command line arguments. To acquire memory, the "-m" commandline argument should be used. Memory acquisition is bypassed by default. 
 
-2. Memory acquisition is controlled by command line arguments. To force memory collection with no prompt, the "-mem" argument shoudl be passed. To bypass memory collecdtion, the "-nomem" argument should be passed. If no argument is passed, the script will prompt the user for memory collection.
+3. DFIRTriage must be executed with Administrative privileges.
 
-3. If prompted for memory collectdion, press “y” or “n” and then hit ENTER to continue. 
 
 Output Analysis
 -
-Once the script has completed, you should find DFIRTriage, core.ir, and an output directory beginning with the hostname of the target.  
+Once the script has completed, the final action is to clean up the output directory. If running the compiled executable, the only data remaining with be a zipped archive of the output as well as DFIRTriage.exe. If running the Python code directly the "./data/core.ir", DFIRTriage3_PUB.py, and a zipped archive of the output are left.   
 
 Output Folder
 -
@@ -85,6 +96,8 @@ The output folder name includes the target hostname and a date/time code indicat
 Artifacts List
 =
 The following is a general listing of the information and artifacts gathered.  
+
+* **Browser History** --> browser history collection from multiple browsers
 
 * **Memory Raw** --> image acquisition (optional) 
 
