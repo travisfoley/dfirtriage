@@ -31,10 +31,25 @@
 ## information for use with initial Incident Response.                     ##
 ##                                                                         ##
 ## FILENAME: DFIRTriage.py                                                 ##
-## VERSION: 3.0                                                            ##
+## VERSION: 3.0.1                                                          ##
 ## STATUS: PUBLIC                                                          ##
 ## NOTE:                                                                   ##
+## - created new EventLogs folder                                          ##
+## - added full eventlog (evtx) pull                                       ##
+## - dump local groups                                                     ##
+## - dump local firewall policy                                            ##
+## - changed "List_users.txt" to "local_users.txt"                         ##
+## - moved eventlogs.csv to EventLogs folder                               ##
+## - added args for --evtlogs, --evtlogsall, --nomem, --evtplogs, --evtpall##
+##    -evt OR --evtlogs = grabs app, sec, and sys event logs               ##
+##    -evtall OR --evtlogsall = grabs ALL event log (evtx) files           ##
+##    -evtp OR --evtplogs = parses targeted events                         ##
+##    -evtpall OR --evtpall = parses all of the System, Application, and   ##
+##      Security events                                                    ##
+##    -nm OR --nomen = does a full collection, but does not grab memory... ##
+##      memory is grabbed by default now                                   ##
 ##                                                                         ##
+##  Last change:  8/31/17 2:13 PM                                          ##
 ##                                                                         ##
 #############################################################################
 
@@ -55,13 +70,33 @@ import getpass
 #setup commandline options
 parser = argparse.ArgumentParser(description='Forensic acquisition of volatile data and system information for '
                                              'host-based incident response.')
-parser.add_argument('-nm', '--nomem', action='store_true', help="Full system collection plus Memory collection")
+parser.add_argument('-nm', '--nomem', action='store_true', help="Full system collection only, NO Memory collection")
 parser.add_argument('-d', '--debug', action='store_true', help="Debug")
 parser.add_argument('-ho', '--hashing', action='store_true', help="Perform hashing ONLY")
 parser.add_argument('-bo', '--browserh', action='store_true', help="Perform browser history ONLY")
+parser.add_argument('-evt', '--evtlogs', action='store_true', help="Pull app, sec, & sys event log evtx files")
+parser.add_argument('-evtall', '--evtlogsall', action='store_true', help="Pull all event log evtx files")
+parser.add_argument('-evtp', '--evtparse', action='store_true', help="Parse the following events only: \n"
+                    "\t 104 - This event indicates that an admin or an application has cleared the specified event log. (App) | "
+                    "\t 1022 - New MSI file installed. (App) | "
+                    "\t 1033 - Program installed using MsiInstaller. (App) | "
+                    "\t 1102 - Event 1102 is logged whenever the Security log is cleared, REGARDLESS of the status of the Audit System Events audit policy. (App) | "
+                    "\t 4624 - successful logon (Sec) | "
+                    "\t 4625 - failed logon (Sec) | "
+                    "\t 4648 - RunAs usage, privilege escalation, lateral movement(Sec) | "
+                    "\t 4698 - scheduled task creation, persistence (Sec) | "
+                    "\t 4697 - service creation, details will contain 'psexec' if used, persistence (Sec) | " 
+                    "\t 4732 - User added to privileged local group(Sec) \n" 
+                    "\t 4778 - an RDP session was reconnected as opposed to a fresh logon seen by event 4624.(Sec) | " 
+                    "\t 4779 - an RDP session was disconnected as opposed to a logoff seen by events 4647 or 4634.(Sec) | " 
+                    "\t 6 - New Kernel Filter Driver. Could be an indication that a kernel-mode rootkit was installed. (Sys) | " 
+                    "\t 7035 - Successful start OR stop control was sent to a service. (Sys) | " 
+                    "\t 7045 - New Windows service was installed. (Sys) | ")
+parser.add_argument('-evtpall', '--evtparseall', action='store_true', help="Parse all Application, System, and "
+                                                                           "Security event log events")
 args = parser.parse_args()
 
-VERSION = "3.1.0"
+VERSION = "3.0.1"
 CURRENTUSER = getpass.getuser()
 if args.debug:
     debugMode = 'on'
@@ -138,7 +173,8 @@ def ENV_setup():
     AppFolders = ["ForensicImages/Memory", "ForensicImages/HDD", "LiveResponseData/BasicInfo", "LiveResponseData/UserInfo",
                   "LiveResponseData/NetworkInfo", "LiveResponseData/PersistenceMechanisms",
                   "LiveResponseData/Registry/regripped-out", "LiveResponseData/Registry/usb-install-log",
-                  "LiveResponseData/Prefetch", "LiveResponseData/FileSystem" ]
+                  "LiveResponseData/Prefetch", "LiveResponseData/FileSystem", "LiveResponseData/EventLogs",
+                  "LiveResponseData/GroupPolicy"]
     if not os.path.exists(CaseFolder):
         os.makedirs(CaseFolder)
     for folder in AppFolders:
@@ -205,7 +241,6 @@ def Mem_scrap():
 def Prefetch():
     print("[+] Prefetch collection...\n", flush=True)
 
-
     # Detecting system architecture
     if os.path.exists("c:\windows\system32\\"):
         # variable to point to the location of "xcopy" on the remote system
@@ -256,6 +291,55 @@ def Hash_dir(output, source_dir):
     SHA256Run = MD5_path + SHA256Param
     with open(CaseFolder + "/" + output, 'w') as fout:
         subprocess.call(SHA256Run, stdout=fout)
+
+def EventLogGrab():
+    print("[+] Grab App, Sys, and Sec (.evtx) files...\n", flush=True)
+
+    # Detecting system architecture
+    if os.path.exists("c:\\windows\\system32\\"):
+        # variable to point to the location of "xcopy" on the remote system
+        XcopyDir = "c:\\windows\\system32\\"
+        # setting up variables to run xcopy with appropriate parameters
+        XcopyAppEvtxParam = XcopyDir + "xcopy.exe /s/e/h/i" + " " + XcopyDir + "\\Winevt\\Logs\\Application.evtx "
+        XcopySysEvtxParam = XcopyDir + "xcopy.exe /s/e/h/i" + " " + XcopyDir + "\\Winevt\\Logs\\System.evtx "
+        XcopySecEvtxParam = XcopyDir + "xcopy.exe /s/e/h/i" + " " + XcopyDir + "\\Winevt\\Logs\\Security.evtx "
+        XcopyEvtxOut = CaseFolder + "\LiveResponseData\EventLogs"
+        XcopyAppEvtx = XcopyAppEvtxParam + XcopyEvtxOut
+
+        XcopySysEvtx = XcopySysEvtxParam + XcopyEvtxOut
+        XcopySecEvtx = XcopySecEvtxParam + XcopyEvtxOut
+
+        # copying Eventlog files from target
+        subprocess.call(XcopyAppEvtx, stdout=NOERROR, stderr=NOERROR)
+        subprocess.call(XcopySysEvtx, stdout=NOERROR, stderr=NOERROR)
+        subprocess.call(XcopySecEvtx, stdout=NOERROR, stderr=NOERROR)
+
+    else:
+        print("\nXcopy missing from target\n", flush=True)
+
+
+def EventLogGrabAll():
+    print("[+] Grab all Eventlog (.evtx) files...\n", flush=True)
+
+    # Detecting system architecture
+    if os.path.exists("c:\\windows\\system32\\"):
+        # variable to point to the location of "xcopy" on the remote system
+        XcopyDir = "c:\\windows\\system32\\"
+        # setting up variables to run xcopy with appropriate parameters
+        XcopyAllEvtxParam = XcopyDir + "xcopy.exe /s/e/h/i" + " " + XcopyDir + "\\Winevt\\Logs\\*.evtx "
+        XcopyEvtxOut = CaseFolder + "\LiveResponseData\EventLogs"
+        XcopyAllEvtx = XcopyAllEvtxParam + XcopyEvtxOut
+
+        # copying Eventlog files from target
+        subprocess.call(XcopyAllEvtx, stdout=NOERROR, stderr=NOERROR)
+
+    else:
+        print("\nXcopy missing from target\n", flush=True)
+
+def GPOreport():
+    print("[+] Run Group Policy report...\n", flush=True)
+    os.system('gpresult /H %s/LiveResponseData/GroupPolicy/group_policy.html' % CaseFolder)
+
 
 def CoreIntegrity():
     if os.path.isfile(bundle_dir + "\core.ir"):
@@ -345,7 +429,7 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "PrcView_extended.txt",
               CaseFolder + "/LiveResponseData/BasicInfo" + "/" + "PrcView_extended.txt")
 
-    print("\t" + "[-] Collecting Windows character code page info...\n", flush=True)
+    print("\t" + "[-] Collect Windows character code page info...\n", flush=True)
 
     # variable to point to the Windows Code Page program under system32
     CHCPcom = "%s\system32\chcp.com" % (os.getenv('WINDIR'))
@@ -359,7 +443,7 @@ def VolatileDataGather():
               CaseFolder + "/LiveResponseData/BasicInfo" + "/" + "Windows_codepage.txt")
 
     if debugMode == "off":
-        print("\t" + "[-] Creating complete file listing...\n", flush=True)
+        print("\t" + "[-] Create complete file listing...\n", flush=True)
 
         # setting up directory list command
         DirFileList = "cmd.exe /C dir C:\* /s/o-d"
@@ -374,7 +458,7 @@ def VolatileDataGather():
     else:
         print("(i) DEBUG MODE: Skipping file listing...\n", flush=True)
 
-    print("\t" + "[-] Creating list of hidden directories...\n", flush=True)
+    print("\t" + "[-] Create list of hidden directories...\n", flush=True)
 
     # setting up netstat and parameters
     HiddenDirList = "cmd.exe /C dir /S /B /AHD C:\Windows\*"
@@ -387,19 +471,29 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "List_hidden_directories.txt",
               CaseFolder + "/LiveResponseData/BasicInfo" + "/" + "List_hidden_directories.txt")
 
-    print("\t" + "[-] Logging user information...\n", flush=True)
+    print("\t" + "[-] Log whoami info...\n", flush=True)
+
     # setting up whoami command
     UserInfo = "%s/whoami.exe" % (os.path.realpath('./winutils'))
-
     # running whoami
     with open('whoami.txt', 'w') as fout:
         subprocess.call(UserInfo, stdout=fout)
-
-    # moving code page info to case folder
+    # moving whoami info to case folder
     os.rename(os.path.realpath('.') + "/" + "whoami.txt",
               CaseFolder + "/LiveResponseData/UserInfo" + "/" + "whoami.txt")
 
-    print("\t" + "[-] Logging system info...\n", flush=True)
+    print("\t" + "[-] Dump local firewall configuration...\n", flush=True)
+
+    # setting up firewall policy command
+    FwPol = 'netsh advfirewall firewall show rule name=all'
+    # firewall policy
+    with open('firewall_policy.txt', 'w') as fout:
+        subprocess.call(FwPol, stdout = fout)
+    # moving firewall info to case folder
+    os.rename(os.path.realpath('.') + "/" + "firewall_policy.txt",
+              CaseFolder + "/LiveResponseData/BasicInfo" + "/" + "firewall_policy.txt")
+
+    print("\t" + "[-] Log system info...\n", flush=True)
     # setting up Windows version command
     WinVer = "cmd.exe /C ver"
 
@@ -422,7 +516,7 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "system_info.txt",
               CaseFolder + "/LiveResponseData/BasicInfo" + "/" + "system_info.txt")
 
-    print("\t" + "[-] Recording current date and time...\n", flush=True)
+    print("\t" + "[-] Record current date and time...\n", flush=True)
     # setting up date command
     WinDate = "cmd.exe /C date /T"
 
@@ -438,7 +532,7 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "current_date_time.txt",
               CaseFolder + "/LiveResponseData/BasicInfo" + "/" + "current_date_time.txt")
 
-    print("\t" + "[-] Logging scheduled tasks...\n", flush=True)
+    print("\t" + "[-] Log scheduled tasks...\n", flush=True)
 
     # setting up scheduled tasks command
     SchTasks = "cmd.exe /C schtasks /query /fo LIST /v"
@@ -451,7 +545,7 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "scheduled_tasks.txt",
               CaseFolder + "/LiveResponseData/PersistenceMechanisms" + "/" + "scheduled_tasks.txt")
 
-    print("\t" + "[-] Logging loaded processes and DLLs...\n", flush=True)
+    print("\t" + "[-] Log loaded processes and DLLs...\n", flush=True)
 
     # setting up tasklist to log running processes
     RunningProcs = "cmd.exe /C tasklist /V"
@@ -486,7 +580,7 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "services_aw_processes.txt",
               CaseFolder + "/LiveResponseData/PersistenceMechanisms" + "/" + "services_aw_processes.txt")
 
-    print("\t" + "[-] Logging IP config information...\n", flush=True)
+    print("\t" + "[-] Log IP config information...\n", flush=True)
 
     # setting up command to grab network config information
     IpCfg = "cmd.exe /C ipconfig /all"
@@ -499,7 +593,7 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "Internet_settings.txt",
               CaseFolder + "/LiveResponseData/NetworkInfo" + "/" + "Internet_settings.txt")
 
-    print("\t" + "[-] Recording open network connections...\n", flush=True)
+    print("\t" + "[-] Record open network connections...\n", flush=True)
 
     # setting up command record open network connections
     OpenNet = "cmd.exe /C netstat -ano"
@@ -512,7 +606,7 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "Open_network_connections.txt",
               CaseFolder + "/LiveResponseData/NetworkInfo" + "/" + "Open_network_connections.txt")
 
-    print("\t" + "[-] Logging DNS cache entries...\n", flush=True)
+    print("\t" + "[-] Log DNS cache entries...\n", flush=True)
 
     # setting up command to log DNS cache
     DnsCache = "cmd.exe /C ipconfig /displaydns"
@@ -525,7 +619,7 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "DNS_cache.txt",
               CaseFolder + "/LiveResponseData/NetworkInfo" + "/" + "DNS_cache.txt")
 
-    print("\t" + "[-] Dumping ARP table...\n", flush=True)
+    print("\t" + "[-] Dump ARP table...\n", flush=True)
 
     # setting up command to dump ARP table
     ArpDump = "cmd.exe /C arp -a"
@@ -537,7 +631,7 @@ def VolatileDataGather():
     # moving ARP table data to case folder
     os.rename(os.path.realpath('.') + "/" + "ARP.txt", CaseFolder + "/LiveResponseData/NetworkInfo" + "/" + "ARP.txt")
 
-    print("\t" + "[-] Logging local user account names...\n", flush=True)
+    print("\t" + "[-] Log local user account names...\n", flush=True)
 
     # setting up command to log local users
     LUsers = "cmd.exe /C net user"
@@ -548,9 +642,23 @@ def VolatileDataGather():
 
     # moving local user list to case folder
     os.rename(os.path.realpath('.') + "/" + "List_users.txt",
-              CaseFolder + "/LiveResponseData/UserInfo" + "/" + "List_users.txt")
+              CaseFolder + "/LiveResponseData/UserInfo" + "/" + "local_users.txt")
 
-    print("\t" + "[-] Recording network routing information...\n", flush=True)
+    print("\t" + "[-] Log local groups...\n", flush=True)
+
+    # setting up local group command
+    LocalGroups = 'net localgroup'
+
+    # local groups
+    with open('local_groups.txt', 'w') as fout:
+        subprocess.call(LocalGroups, stdout=fout)
+
+    # moving local groups info to case folder
+    os.rename(os.path.realpath('.') + "/" + "local_groups.txt",
+              CaseFolder + "/LiveResponseData/UserInfo" + "/" + "local_groups.txt")
+
+
+    print("\t" + "[-] Record network routing information...\n", flush=True)
 
     # setting up command collect network routing information
     NetRouteInfo = "cmd.exe /C netstat -rn"
@@ -563,7 +671,7 @@ def VolatileDataGather():
     os.rename(os.path.realpath('.') + "/" + "routing_table.txt",
               CaseFolder + "/LiveResponseData/NetworkInfo" + "/" + "routing_table.txt")
 
-    print("\t" + "[-] Gathering NetBIOS information... \n", flush=True)
+    print("\t" + "[-] Gather NetBIOS information... \n", flush=True)
 
     # collecting netbios infon
 
@@ -592,7 +700,7 @@ def VolatileDataGather():
     print("[+] Gather additional volatile data...\n", flush=True)
 
 def NetworkDataGathering():
-    print("\t" + "[-] Collecting currently open TCP/UDP ports...", flush=True)
+    print("\t" + "[-] Collect currently open TCP/UDP ports...", flush=True)
     # setting up variables to run cports with output parameters
     CportsRun = CportsDir + "cports.exe /shtml cports.html /sort 1 /sort ~'Remote Address'"
     CportsParam = CaseFolder + "/LiveResponseData/NetworkInfo" + "/cports.html"
@@ -680,9 +788,59 @@ def SystemDataGathering():
     os.rename(os.path.realpath('.') + "/" + "PsLoggedon.txt", CaseFolder + "/LiveResponseData/BasicInfo" + "/"
               + "PsLoggedon.txt")
 
-    # [psloglist] setting up path to EXE
-    siPsloglistEXEPath = SiDir + "psloglist.exe"
+    if debugMode == "off":
+        # [Tcpvcon] setting up path to EXE
+        SiTcpvconEXEPath = SiDir + "Tcpvcon.exe"
 
+        # [Tcpvcon] setting parameters
+        SiTcpvconParam = " -a"
+
+        # [Tcpvcon] setting execution command
+        SiTcpvconExec = SiTcpvconEXEPath + SiTcpvconParam
+
+        # [Tcpvcon] running
+        with open('Tcpvcon.txt', 'w') as fout:
+           subprocess.call(SiTcpvconExec, stdout=fout, stderr=NOERROR)
+
+        # [Tcpvcon] moving  output to case folder
+        os.rename(os.path.realpath('.') + "/" + "Tcpvcon.txt", CaseFolder + "/LiveResponseData/NetworkInfo" + "/"
+                  + "Tcpvcon.txt")
+    else:
+        print("(i) DEBUG MODE: Skipping network info gathering...", flush=True)
+
+    print("[+] Check WINDIR for alternate data streams...\n" , flush=True)
+
+    # [streams] setting up path to EXE
+    SiStreamsEXEPath = SiDir + "streams.exe"
+
+    # [streams] setting parameters
+    SiStreamsParam = " -s %s\ " % (os.getenv('WINDIR'))
+
+    # [streams] setting execution command
+    SiStreamsExec = SiStreamsEXEPath + SiStreamsParam
+
+    # [streams] running
+    with open('Alternate_data_streams.txt', 'w') as fout:
+        subprocess.call(SiStreamsExec, stdout=fout, stderr=NOERROR)
+
+    # [streams] moving  output to case folder
+    os.rename(os.path.realpath('.') + "/" + "Alternate_data_streams.txt", CaseFolder + "/LiveResponseData/BasicInfo"
+              + "/" + "Alternate_data_streams.txt")
+
+    print("\t" + "[-] Removing EULA acceptance...", flush=True)
+
+    # setting up commands to remote EULA acceptances for the SI toolset from the registry
+    EULADel = "cmd.exe /C reg.exe DELETE HKCU\Software\Sysinternals /f"
+
+    # removing EULA acceptance from the registry
+    subprocess.call(EULADel, stdout=NOERROR, stderr=NOERROR)
+
+def EventParseByID():
+    print("[+] Parse targeted events from event logs...\n", flush=True)
+
+    # [psloglist] setting up path to EXE
+    SiDir = os.path.realpath('.') + "\\sysinternals\\"
+    siPsloglistEXEPath = SiDir + "psloglist.exe -accepteula"
     siPsloglistAppEvtList = "104,1022,1033"
     siPsloglistSecEvtList = "1102,4624,4625,4648,4698,4697,4732,4778,4779"
     siPsloglistSysEvtLIst = "6,7035,7045"
@@ -715,64 +873,45 @@ def SystemDataGathering():
 
     # [psloglist] running
     with open('eventlogs.csv', 'w') as fout:
-       subprocess.call(siPsloglistAppExec, stdout=fout, stderr=NOERROR)
-       subprocess.call(siPsloglistSecExec, stdout=fout, stderr=NOERROR)
-       subprocess.call(siPsloglistSysExec, stdout=fout, stderr=NOERROR)
+        subprocess.call(siPsloglistAppExec, stdout=fout, stderr=NOERROR)
+        subprocess.call(siPsloglistSecExec, stdout=fout, stderr=NOERROR)
+        subprocess.call(siPsloglistSysExec, stdout=fout, stderr=NOERROR)
 
     # [psloglist] moving output to case folder
-    os.rename(os.path.realpath('.') + "/" + "eventlogs.csv", CaseFolder + "/LiveResponseData/BasicInfo" + "/"
+    os.rename(os.path.realpath('.') + "/" + "eventlogs.csv", CaseFolder + "/LiveResponseData/EventLogs" + "/"
               + "eventlogs.csv")
 
-    if debugMode == "off":
-        # [Tcpvcon] setting up path to EXE
-        SiTcpvconEXEPath = SiDir + "Tcpvcon.exe"
 
-        # [Tcpvcon] setting parameters
-        SiTcpvconParam = " -a"
+def EventParseALL():
+    print("[+] Parse all events from event logs...\n", flush=True)
+    # [psloglist] setting up path to EXE
+    SiDir = os.path.realpath('.') + "\\sysinternals\\"
+    siPsloglistEXEPath = SiDir + "psloglist.exe -accepteula"
 
-        # [Tcpvcon] setting execution command
-        SiTcpvconExec = SiTcpvconEXEPath + SiTcpvconParam
+    # [psloglist] setting parameters
+    siPsloglistAppParam = " -s -x application"
+    siPsloglistSecParam = " -s -x security"
+    siPsloglistSysParam = " -s -x system"
 
-        # [Tcpvcon] running
-        with open('Tcpvcon.txt', 'w') as fout:
-           subprocess.call(SiTcpvconExec, stdout=fout, stderr=NOERROR)
+    # [psloglist] setting execution command
+    siPsloglistAppExec = siPsloglistEXEPath + siPsloglistAppParam
+    siPsloglistSecExec = siPsloglistEXEPath + siPsloglistSecParam
+    siPsloglistSysExec = siPsloglistEXEPath + siPsloglistSysParam
 
-        # [Tcpvcon] moving  output to case folder
-        os.rename(os.path.realpath('.') + "/" + "Tcpvcon.txt", CaseFolder + "/LiveResponseData/NetworkInfo" + "/"
-                  + "Tcpvcon.txt")
-    else:
-        print("(i) DEBUG MODE: Skipping network info gathering...", flush=True)
+    # [psloglist] running
+    with open('eventlogs-all.csv', 'w') as fout:
+        subprocess.call(siPsloglistAppExec, stdout=fout, stderr=NOERROR)
+        subprocess.call(siPsloglistSecExec, stdout=fout, stderr=NOERROR)
+        subprocess.call(siPsloglistSysExec, stdout=fout, stderr=NOERROR)
 
-    print("[+] Checking WINDIR for alternate data streams...\n" , flush=True)
+    # [psloglist] moving output to case folder
+    os.rename(os.path.realpath('.') + "/" + "eventlogs-all.csv", CaseFolder + "/LiveResponseData/EventLogs" + "/"
+              + "eventlogs-all.csv")
 
-    # [streams] setting up path to EXE
-    SiStreamsEXEPath = SiDir + "streams.exe"
-
-    # [streams] setting parameters
-    SiStreamsParam = " -s %s\ " % (os.getenv('WINDIR'))
-
-    # [streams] setting execution command
-    SiStreamsExec = SiStreamsEXEPath + SiStreamsParam
-
-    # [streams] running
-    with open('Alternate_data_streams.txt', 'w') as fout:
-        subprocess.call(SiStreamsExec, stdout=fout, stderr=NOERROR)
-
-    # [streams] moving  output to case folder
-    os.rename(os.path.realpath('.') + "/" + "Alternate_data_streams.txt", CaseFolder + "/LiveResponseData/BasicInfo"
-              + "/" + "Alternate_data_streams.txt")
-
-    print("\t" + "[-] Removing EULA acceptance...", flush=True)
-
-    # setting up commands to remote EULA acceptances for the SI toolset from the registry
-    EULADel = "cmd.exe /C reg.exe DELETE HKCU\Software\Sysinternals /f"
-
-    # removing EULA acceptance from the registry
-    subprocess.call(EULADel, stdout=NOERROR, stderr=NOERROR)
 
 def PrefetchP():
     # [BEGIN] Prefetch Parsing
-    print("\n[+] Parsing prefetch data...\n", flush=True)
+    print("\n[+] Parse prefetch data...\n", flush=True)
 
     # [pf] setting up path to TZWorks tools
     TZWDir = os.path.realpath('.') + "\\TZWorks\\"
@@ -797,7 +936,7 @@ def PrefetchP():
 
 def RegistryStuff():
     # [BEGIN] Registry Extraction
-    print("[+] Dumping registry hives...\n", flush=True)
+    print("[+] Dump registry hives...\n", flush=True)
     RegistryDumpHives = {"NTUSER": 'HKCU', "SAM": 'HKLM\SAM', "SYSTEM": 'HKLM\SYSTEM',
                          "SECURITY": 'HKLM\SECURITY', "SOFTWARE": 'HKLM\SOFTWARE'}
     for hive in RegistryDumpHives:
@@ -809,7 +948,7 @@ def RegistryStuff():
     # [END] Registry Extraction
 
     # [BEGIN] Registry Parsing
-    print("[+] Parsing registry hives...\n", flush=True)
+    print("[+] Parse registry hives...\n", flush=True)
 
     # [Regripper] setting up path to Regripper
     RrDir = os.path.realpath('.') + "\\regripper\\"
@@ -830,7 +969,7 @@ def RegistryStuff():
 
 def USBAP():
     # [BEGIN] USB Artifact Parsing
-    print("[+] Grabbing more USB artifacts...\n", flush=True)
+    print("[+] Grab more USB artifacts...\n", flush=True)
 
     # Detecting system architecture
     if os.path.exists("c:\windows\system32\\"):
@@ -862,7 +1001,7 @@ def Data_compress():
 
 def GetBrowserHistory():
 
-    print("[+] Getting User Browsing History...\n", flush=True)
+    print("[+] Get User Browsing History...\n", flush=True)
     BHVDir = os.path.realpath('.') + "\\BrowsingHistoryView\\"
     BHVEXEPath = BHVDir + BVHRun
     BHVParam = " /SaveDirect /sort 3 /VisitTimeFilterType 1 /cfg BrowsingHistoryView.cfg /scomma" + " " + CaseFolder \
@@ -884,6 +1023,8 @@ if not args.nomem:
     Mem_scrap()
     print("\n", flush=True)
 
+Prefetch()
+
 #Just doing Browser History
 if args.browserh:
     GetBrowserHistory()
@@ -903,8 +1044,20 @@ if args.hashing:
     ENV_cleanup()
     sys.exit(0)
 
+if args.evtlogs:
+    EventLogGrab()
 
-Prefetch()
+if args.evtlogsall:
+    EventLogGrabAll()
+
+if args.evtparse:
+    EventParseByID()
+
+if args.evtparseall:
+    EventParseALL()
+
+
+
 Last_user()
 UsersList = ListUsers()
 
@@ -919,6 +1072,7 @@ Hashing_new('LiveResponseData/BasicInfo/Hashes_md5_System_TEMP_WindowsPE_and_Dat
 
 NetworkInfoGathering()
 VolatileDataGather()
+GPOreport()
 SystemDataGathering()
 PrefetchP()
 RegistryStuff()
