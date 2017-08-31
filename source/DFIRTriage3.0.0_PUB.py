@@ -55,13 +55,13 @@ import getpass
 #setup commandline options
 parser = argparse.ArgumentParser(description='Forensic acquisition of volatile data and system information for '
                                              'host-based incident response.')
-parser.add_argument('-m', '--mem', action='store_true', help="Full system collection plus Memory collection")
+parser.add_argument('-nm', '--nomem', action='store_true', help="Full system collection plus Memory collection")
 parser.add_argument('-d', '--debug', action='store_true', help="Debug")
 parser.add_argument('-ho', '--hashing', action='store_true', help="Perform hashing ONLY")
 parser.add_argument('-bo', '--browserh', action='store_true', help="Perform browser history ONLY")
 args = parser.parse_args()
 
-VERSION = "3.0.0"
+VERSION = "3.1.0"
 CURRENTUSER = getpass.getuser()
 if args.debug:
     debugMode = 'on'
@@ -880,6 +880,10 @@ HasAdminAccess()
 CoreIntegrity()
 ENV_setup()
 
+if not args.nomem:
+    Mem_scrap()
+    print("\n", flush=True)
+
 #Just doing Browser History
 if args.browserh:
     GetBrowserHistory()
@@ -899,9 +903,6 @@ if args.hashing:
     ENV_cleanup()
     sys.exit(0)
 
-if args.mem:
-    Mem_scrap()
-    print("\n", flush=True)
 
 Prefetch()
 Last_user()
