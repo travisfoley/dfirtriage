@@ -3,7 +3,7 @@ Digital forensic acquisition tool for Windows-based incident response.
 
 How to Use
 =
-To run, drop dfirtriage.exe on the target and execute with admin rights. 
+To run, drop DFIRtriage.exe on the target and execute with admin rights. All other necessary files are bundled into DFIRtriage.exe.
 
 ***************************************************************************************
 
