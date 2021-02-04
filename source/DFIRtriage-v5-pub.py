@@ -307,26 +307,7 @@ def core_integrity():
         print("\n[!] Hash values do not match. Integrity check failed. Please download a new copy of DFIRtriage.", flush=True)
         sys.exit()
 
-# def legacy_banner():
-#     """This is our OG banner"""
-#     print("\n")
-#     print(r"####################################################")
-#     print(r"#          ________ _     __   ___ _  ___          #")
-#     print(r"#         / _/_   _| |   | _\ | __| || _ \         #")
-#     print(r"#        | \__ | | | |   | v || _|| || v /         #")
-#     print(r"#         \__/ |_| |_|   |__/\/_|\/_\/_|_\         #")
-#     print(r"#   _____ ___ _  __   __ ___   _____ __   __  _    #")
-#     print(r"#  |_   _| _ \ |/  \ / _] __| |_   _/__\ /__\| |   #")
-#     print(r"#    | | | v / | /\ | [/\ _|    | || \/ | \/ | |_  #")
-#     print(r"#    |_| |_|_\_|_||_|\__/___|   |_| \__/ \__/|___| #")
-#     print(r"#                                                  #")
-#     print(r"#                   Version {}                  #".format(VERSION))
-#     print(r"#                                                  #")
-#     print(r"####################################################")
-#     print("\n")
-
 def banner():
-    """This is our new banner"""
     print('''
     
                 - - - - - - - - - - - - - - - - - - - 
