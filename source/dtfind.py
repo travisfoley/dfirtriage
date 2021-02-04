@@ -22,26 +22,33 @@
 ##  For more information, please refer to  http://unlicense.org            ##
 ##                                                                         ##
 ##  Author: Travis Foley, travis.foley@gmail.com                           ##
-##          Joel Maisenhelder, dfirtriage@gmail.com                        ##
+##                                                                         ##
 #############################################################################
 
 #############################################################################
 ##                                                                         ##
-## DESCRIPTION: Search tool for DFIRtriage output.                         ##
+## DESCRIPTION: Searches DFIRtriage output for a given string and          ##
+## writes the results to a text file.                                      ##
 ##                                                                         ##
 ## FILENAME: dtfind.py                                                     ##
-## VERSION: 1.0                                                            ##
-## STATUS: PUB                                                             ##
-## AUTHORS: Travis Foley // Joel Maisenhelder                              ##
+## VERSION: 2.0.1                                                           ##
+## STATUS: PROD                                                            ##
+## WRITTEN: 7/28/17                                                        ##
+## LAST MOD: 5/14/20 @2:39                                                 ##
+## NOTE:                                                                   ##
+##   > added ext blacklist to avoid scanning memory dumps & system files   ##
 #############################################################################
 
 
 # environment setup ------------------------------------------------------------------------------------------------------------#
-import argparse, os, sys
+import argparse
+import os
+import sys
+import zipfile
 from datetime import datetime
 
 reg_files = ["NTUSER", "SYSTEM", "SOFTWARE", "SAM", "SECURITY"]
-version = "dtfind v1.0"
+version = "dtfind v2.0"
 # environment setup ------------------------------------------------------------------------------------------------------------#
 
 
@@ -74,17 +81,19 @@ def get_keyword():
 # set path to LiveResponseData directory --------------------------------------------------------------------------------------#
 def set_start_dir():
     global start_dir
-    if "LiveResponseData" in os.getcwd():
-        start_dir = os.getcwd()
-    else:
-        start_dir = input("\nEnter FULL path to 'LiveResponseData' dir (no quotes):> ")
-        if "LiveResponseData" not in start_dir:
-            sys.exit("\n-------------------------------------------------------------\n"
-                "[!] LiveResponseData directory not found in path. Try again.\n"
-                    "-------------------------------------------------------------")
+    start_dir = os.path.dirname(os.path.abspath(__file__))
+    dir_flag = 0
+    if os.path.isdir("{}\\LiveResponseData".format(start_dir)):
+        dir_flag = 1
+    if os.path.isfile("{}\\LiveResponseData.zip".format(start_dir)):
+        if dir_flag == 0:
+            lrd_zip = zipfile.ZipFile("LiveResponseData.zip")
+            lrd_zip.extractall()
+            lrd_zip.close()
         else:
             pass
-            
+    else:
+        sys.exit("\nLiveResponseData.zip missing. Fix and retry.")
 # set path to LiveResponseData directory --------------------------------------------------------------------------------------#
 
 
@@ -115,16 +124,14 @@ def run_search():
     search_list = search_file_list_no_highlight(curr_dir, search_string)
     for x in search_list:
         try:
-            print("\n--------------------------------------------------------------------------------------------------"
-                  "-----\n")
+            print("\n-------------------------------------------------------------\n")
             print("Data File Name: ", x[0])
             print("Info: ", x[1])
             print("Line Number: ", x[2])
         except UnicodeEncodeError:
             continue
     log_file = "search_results({}).txt".format(search_string)
-    print("\n=========================================================================================================="
-          "=\n\n\nSearch complete. Your results have been saved in:  {}\n".format(log_file))
+    print("\n-------------------------------------------------------------\n\n\nSearch complete. Your results have been saved in:  {}\n".format(log_file))
 
 def search_file_list_no_highlight(filenamelist, searchString):
     global results
@@ -153,18 +160,18 @@ def search_file_list_no_highlight(filenamelist, searchString):
 # returns list containing full path to each file in current dir and all subdirs -----------------------------#
 def get_file_list(dirPath):  
     fileList = []
+    blacklist = [".exe", ".pf", ".raw", ".sys"]
     for dirname, dirnames, filenames in os.walk(dirPath):
         for filename in filenames:
-            if filename.endswith(".exe"):
-                break
-            if filename.endswith(".pf"):
-                break
             if "search_results" in filename:
                 break
             if "dtfind." in filename:
                 break
             for r in reg_files:
                 if filename == r:
+                    break
+            for ext in blacklist:
+                if filename.endswith(ext):
                     break
             else:
                 fileList.append(os.path.join(dirname, filename))
@@ -176,17 +183,16 @@ def get_file_list(dirPath):
 def log_results():
     ''' writes results to log file with search term in name ''' 
     global search_string
-    log_file = "search_results({}).txt".format(search_string.replace(":", "."))
+    log_file = "saved search ({}).txt".format(search_string.replace(":", "."))
     search_list_log = search_file_list_no_highlight(curr_dir, search_string)
     original = sys.stdout
     sys.stdout = open(log_file, 'w', errors="surrogateescape")
     time_stamp = datetime.now().strftime('%m-%d-%Y %H:%M')
-    print("# DFIR Triage Search LOG\n# dtfind v1.0\n# Time of search: {} \n# Keyword: '{}'\n".format(time_stamp, search_string))
+    print("# DFIR Triage Search LOG\n# {}\n# Time of search: {} \n# Keyword: '{}'\n".format(version, time_stamp, search_string))
     print("\n[BEGIN LOG]")
     for x in search_list_log:
         try:
-            print("\n--------------------------------------------------------------------------------------------------"
-                  "-----\n")
+            print("\n-------------------------------------------------------------\n")
             print("Data File Name: ", x[0])
             print("Info: ", x[1])
             print("Line Number: ", x[2])
@@ -212,8 +218,8 @@ banner()
 
 # function order determined by commandline args -------------------------------------------------------------#
 if not args.keyword:
-    get_keyword()
     set_start_dir()
+    get_keyword()
     curr_dir = get_file_list(start_dir)
     search_string_check()
     run_search()
