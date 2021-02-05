@@ -109,7 +109,15 @@ Artifacts List
 =
 The following is a general listing of the information and artifacts gathered.  
 
-* **Memory Raw** --> image acquisition (optional) 
+* **SRUM database** --> System usage information collected by System Usage Resource Monitor
+
+* **Hiberfil.sys** --> Compressed RAM image created during hibernation
+
+* **Pagefile.sys** --> Holds data normally stored in RAM when no RAM is available
+
+* **NTUSER.dat & USRCLASS.dat** --> User registry hives collected for every user profile on the system
+
+* **Memory Raw** --> image acquisition
 
 * **Prefetch** --> Collects all prefetch files an parses into a report 
 
