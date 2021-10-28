@@ -3,11 +3,11 @@ Digital forensic acquisition tool for Windows-based incident response.
 
 How to Use
 =
-To run, drop DFIRtriage.exe on the target and execute with admin rights. All other necessary files are bundled into DFIRtriage.exe.
+To run, drop dfirtriage.exe on the target and execute with admin rights. 
 
 ***************************************************************************************
 
-**DFIRTriage v5.0 User's Manual**
+**DFIRTriage v4.0.0 User's Manual**
 =
 
 Description
@@ -23,34 +23,36 @@ DFIRtriage is a tool intended to provide Incident Responders with rapid host dat
 What’s New?
 -----------
 
- - Powershell event logs are now parsed with the "parse all" option (-elpa, --evtlogparseall)
- - Added headless argument (-hl) that bypasses the end prompt for SOC automation support
- - Collection of user registry (NTUSER.DAT & USRCLASS.DAT) for all user profiles on system
- - SRUM database file is now collected
- - DRIRtriage search tool now bundled with DFIRtriage.exe for a more fluid user experience
- - Launching dtfind.exe will automatically export LiveResponseData.zip content and present a promp for immediate content searching
- - Parsing select Windows events by default, argument no longer required
+*General
+- Efficiency updates were made to the code improving flow, cleaning up bugs, and providing performance improvements.
+- Cleaned up the output directory structure
+- Removed TZworks tools from toolset avoiding licensing issues
+- Added commandline arguments for new functionality (run "DFIRtriage --help" for details) 
 
+*Memory acquisition
+- memory is now acquired by default
+- argument required to bypass memory acquisition
+- free space check conducted prior to acquiring memory
+- updated acquisition process to avoid Windows 10 crashes
 
-FIXES
-------
- - Preventing issues with output data size by skipping memory dump when system files is selected
- - Fixed issue where memory dumps fail due to Windows 10 security updates
- - Fixed issue where the parsed output of the NTUSER.DAT registry files were empty
- - Fixed issue with full Eventlog file  collection and restored the "-elf" argument.
- - Fixed issue with memory only (-mo, --memonly) argument ignoring low disk space check and now exits if insufficient free space.
- - Updated embedded Sysinternals utilities with latest version
- - Removed duplicated network connection information in output files.
- - Fixed issue where tool crashes running Event log parsing argument (-elp)
- - Logged in user information is now captured and added to Triage-info.txt when ran all Microsoft supported versions of Windows desktop and server OS
- - code cleanup
- - Permissions issues converting Windows Update log data on EHI builds
+*New artifacts
+- windowsupdate.log file
+- Windows Defender scan logs
+- PowerShell command history
+- HOSTS files
+- netstat output now includes associated PID for all network connections
+- logging all users currently logged in to the target machine to the Triage_info.txt file
+- Pulling dozens of new events from the Windows Event logs
 
+*New! DFIRtriage search tool
+- Conducts keyword search across DFIRtriage output data and writes findings to log file
+- The search tool is a separate executable (dtfind.exe)
+- Double-click to run or run from the command line (eg. dtfind -kw badstuff.php)
 
 
 Dependencies
 -
-The tool repository contains the full toolset required for proper execution and is packed into a single a single file named “core.ir”. This “.ir” file is the only required dependency of DFIRtriage when running in Python and should reside in a directory named data, (ie. "./data/core.ir").  The compiled version of DFIRtriage has the full toolset embedded and does not require the addition of the "./data/core.ir" file.   
+The tool repository contains the full toolset required for proper execution and is packed into a single a single file named “core.ir”. This “.ir” file is the only required dependency of DFIRtriage when running in Python and should reside in a directory named data, (ie. "./data/core.ir").  The compiled version of DFIRtriage has the full toolset embedded and does not require the addition of the "./data/core.ir" file.  NOTE: TZWorks utilities are no longer utilized.   
 
 Contents
 -
@@ -63,8 +65,7 @@ Contents
  * unlicense.txt
    - copy of license agreement
  * source directory
-   - DFIRtriage-v5-pub.py
-   - dtfind.py
+   - DFIRtriage-v4-pub.py
  * dtfind.exe 
    - compiled search tool executable
 
@@ -109,15 +110,7 @@ Artifacts List
 =
 The following is a general listing of the information and artifacts gathered.  
 
-* **SRUM database** --> System usage information collected by System Usage Resource Monitor
-
-* **Hiberfil.sys** --> Compressed RAM image created during hibernation
-
-* **Pagefile.sys** --> Holds data normally stored in RAM when no RAM is available
-
-* **NTUSER.dat & USRCLASS.dat** --> User registry hives collected for every user profile on the system
-
-* **Memory Raw** --> image acquisition
+* **Memory Raw** --> image acquisition (optional) 
 
 * **Prefetch** --> Collects all prefetch files an parses into a report 
 

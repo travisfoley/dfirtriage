@@ -35,10 +35,9 @@
 ## FILENAME: DFIRtriage.py                                                 ##
 ## VERSION: 5.0.1                                                          ##
 ## STATUS: PUB                                                             ##
-## LAST MOD: 2/4/21 @ 3:32 PM                                              ##
-## AUTHOR: Travis Foley                                                    ##
+## LAST MOD: 10/28/21 @ 15:11                                              ##
+## AUTHORS: Travis Foley                                                   ##
 #############################################################################
-
 
 # Built-in Imports:
 import os
@@ -64,7 +63,6 @@ CPORTSDIR = ''
 WMICDIR = ''
 BVHRUN = ''
 OSVERSION = sys.getwindowsversion()
-
 if OSVERSION.major == 10:
     LOGGEDUSERS = subprocess.getoutput("whoami")
 else:
@@ -84,7 +82,7 @@ PARSER.add_argument('-elf', '--evtlogfiles', action='store_true', \
 PARSER.add_argument('-ho', '--hashonly', action='store_true', help=r"Hashes all files on C:\ drive then exits")
 PARSER.add_argument('-bho', '--browserhistonly', action='store_true', help="Pulls browser history then exits")
 PARSER.add_argument('-hl', '--headless', action='store_true', help="Automation support, no user input required")
-PARSER.add_argument('-sf', '--systemfiles', action='store_true', help="Collect locked system files")
+PARSER.add_argument('-sf', '--systemfiles', action='store_true', help="Collect locked system files, force --nomem argument")
 ARGS = PARSER.parse_args()
 
 VERSION = "5.0.1"
@@ -205,13 +203,13 @@ def env_cleanup():
     for files in file_clean_up:
         if os.path.exists(files):
             os.remove(files)
-            
+
     print("[x] Clean up complete.")
     if os.path.exists(__file__):
         os.remove(__file__)
 
 def mem_scrape():
-    """Scrapes the memory from the target system"""
+    """Acquires a raw memory dump from the target system"""
     print("[+] Memory acquisition\n", flush=True)
     # variable to point to the "memory" subdir of current directory
     mem_dir = os.path.realpath('.') + "\\memory\\"
@@ -308,10 +306,11 @@ def core_integrity():
         sys.exit()
 
 def banner():
+
     print('''
     
                 - - - - - - - - - - - - - - - - - - - 
-  ______   _______ ___  _______  __         __                   
+  ______   _______ ___  _______  __         __                    
  |   _  \ |   _   |   ||   _   \|  |_.----.|__|.---.-.-----.-----.
  |.  |   \|.  1___|.  ||.  l   /|   _|   _||  ||  _  |  _  |  -__|
  |.  |    \.  __) |.  ||.  _   1|____|__|  |__||___._|___  |_____|
@@ -319,8 +318,8 @@ def banner():
  |::.. . /|::.|   |::.||::.|:. |                                       
  `------' `---'   `---'`--- ---'                                
                 - - - - - - - - - - - - - - - - - - - 
-                          PUBLIC RELEASE
-                              v{}
+                     P U B L I C  R E L E A S E  
+                                v{}
                 - - - - - - - - - - - - - - - - - - -
     
     

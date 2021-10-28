@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-"""Digital forensic acquisition tool for Windows based incident response"""
+#! python3
+"""A search utility for DFIRtriage output"""
 #############################################################################
 ##                                                                         ##
 ## Unlicense                                                               ##
@@ -31,7 +31,7 @@
 ## writes the results to a text file.                                      ##
 ##                                                                         ##
 ## FILENAME: dtfind.py                                                     ##
-## VERSION: 2.0.1                                                           ##
+## VERSION: 2.0.1                                                          ##
 ## STATUS: PROD                                                            ##
 ## WRITTEN: 7/28/17                                                        ##
 ## LAST MOD: 5/14/20 @2:39                                                 ##
@@ -48,7 +48,7 @@ import zipfile
 from datetime import datetime
 
 reg_files = ["NTUSER", "SYSTEM", "SOFTWARE", "SAM", "SECURITY"]
-version = "dtfind v2.0"
+version = "dtfind v2.0.1"
 # environment setup ------------------------------------------------------------------------------------------------------------#
 
 
