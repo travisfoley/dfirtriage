@@ -23,7 +23,7 @@ DFIRtriage is an incident response tool designed to provide the Incident Respond
 What’s New?
 -----------
 
-*Updates
+*Updates*
 - Powershell event logs are now parsed with the "parse all" option (-elpa, --evtlogparseall)
 - Added headless argument (-hl) that bypasses the end prompt for SOC automation support
 - Collection of user registry files (NTUSER.DAT & USRCLASS.DAT) for all user profiles on system
@@ -32,7 +32,7 @@ What’s New?
 - Launching dtfind.exe will automatically export the LiveResponseData.zip content and present a prompt for immediate content searches
 - Parsing select Windows events by default, argument no longer required 
 
-*Fixes
+*Fixes*
 - Fixed issue where memory dumps fail due to Windows 10 security updates
 - Preventing issues with output data size by skipping memory dump when system files is selected
 - Fixed issue where the parsed output of the NTUSER.DAT registry files were empty
@@ -107,7 +107,7 @@ The following is a general listing of the information and artifacts gathered.
 
 * **Memory Raw** --> image acquisition (optional) 
 
-* **System information ** --> build, service pack level, installed patches, etc
+* **System information** --> build, service pack level, installed patches, etc
 
 * **Prefetch** --> Collects all prefetch files an parses into a report 
 
