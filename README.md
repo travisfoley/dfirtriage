@@ -3,51 +3,46 @@ Digital forensic acquisition tool for Windows-based incident response.
 
 How to Use
 =
-To run, drop dfirtriage.exe on the target and execute with admin rights. 
+To run, drop dfirtriage.exe on the target and execute with admin rights, "-h" for help.
 
 ***************************************************************************************
 
-**DFIRTriage v4.0.0 User's Manual**
+**DFIRTriage v5.0 User's Manual**
 =
 
 Description
 -----------
 
-This document outlines the functionality and proper use of the DFIRtriage tool. Also included is detailed information to help with analysis of the output.  
+This document outlines the functionality and proper use of the DFIRtriage tool. Also included is detailed information to help with analysis of the output. The goal is to equip the Incident Responder with the tools needed to gather and analyze data quickly, to assist with accurate and timely escalation decisions.  
 
 About
 -----
 
-DFIRtriage is a tool intended to provide Incident Responders with rapid host data. Written in Python, the code has been compiled to eliminate the dependency of python on the target host. The tool will run a variety of commands automatically upon execution. The acquired data will reside in the root of the execution directory. DFIRTriage may be ran from a USB drive or executed in remote shell on the target. Windows-only support. 
+DFIRtriage is an incident response tool designed to provide the Incident Responder with rapid host data. Upon execution, select host data and information will be gathered and placed into the execution directory.  DFIRtriage may be ran from a USB drive or executed remotely on the target host.   
 
 What’s New?
 -----------
 
-*General
-- Efficiency updates were made to the code improving flow, cleaning up bugs, and providing performance improvements.
-- Cleaned up the output directory structure
-- Removed TZworks tools from toolset avoiding licensing issues
-- Added commandline arguments for new functionality (run "DFIRtriage --help" for details) 
+*Updates
+- Powershell event logs are now parsed with the "parse all" option (-elpa, --evtlogparseall)
+- Added headless argument (-hl) that bypasses the end prompt for SOC automation support
+- Collection of user registry files (NTUSER.DAT & USRCLASS.DAT) for all user profiles on system
+- SRUM database file now collected
+- DFIRtriage search tool (dtfind.exe) now bundled with DFIRtriage.exe for a more fluid user experience
+- Launching dtfind.exe will automatically export the LiveResponseData.zip content and present a prompt for immediate content searches
+- Parsing select Windows events by default, argument no longer required 
 
-*Memory acquisition
-- memory is now acquired by default
-- argument required to bypass memory acquisition
-- free space check conducted prior to acquiring memory
-- updated acquisition process to avoid Windows 10 crashes
-
-*New artifacts
-- windowsupdate.log file
-- Windows Defender scan logs
-- PowerShell command history
-- HOSTS files
-- netstat output now includes associated PID for all network connections
-- logging all users currently logged in to the target machine to the Triage_info.txt file
-- Pulling dozens of new events from the Windows Event logs
-
-*New! DFIRtriage search tool
-- Conducts keyword search across DFIRtriage output data and writes findings to log file
-- The search tool is a separate executable (dtfind.exe)
-- Double-click to run or run from the command line (eg. dtfind -kw badstuff.php)
+*Fixes
+- Fixed issue where memory dumps fail due to Windows 10 security updates
+- Preventing issues with output data size by skipping memory dump when system files is selected
+- Fixed issue where the parsed output of the NTUSER.DAT registry files were empty
+- Fixed issue with full Eventlog file collection and restored the -elf argument
+- Fixed issue with memory only (-mo, --memonly) argument ignoring low disk space check exiting if insufficient free space
+- Updated all embedded utilities with latest version
+- Removed functions that gathered overlapping network connection information
+- Fixed issue where tool crashes running Event log parsing argument (-elp)
+- Logged-in user information is now captured and added to Triage-info.txt for all supported versions of the Windows OS
+- Code cleanup
 
 
 Dependencies
@@ -65,7 +60,7 @@ Contents
  * unlicense.txt
    - copy of license agreement
  * source directory
-   - DFIRtriage-v4-pub.py
+   - all source code
  * dtfind.exe 
    - compiled search tool executable
 
@@ -100,7 +95,7 @@ Usage
 
 Output Analysis
 -
-Once complete, press enter to cleanup the output directory. If running the executable, the only data remaining with be a zipped archive of the output as well as DFIRtriage.exe. If running the Python code directly only DFIRtriage-v4-pub.py and a zipped archive of the output are left.   
+Once complete, press enter to cleanup the output directory. If running the executable, the only data remaining with be a zipped archive of the output as well as DFIRtriage.exe. If running the Python code directly only DFIRtriage python script and a zipped archive of the output are left.   
 
 Output Folder
 -
@@ -111,6 +106,8 @@ Artifacts List
 The following is a general listing of the information and artifacts gathered.  
 
 * **Memory Raw** --> image acquisition (optional) 
+
+* **System information ** --> build, service pack level, installed patches, etc
 
 * **Prefetch** --> Collects all prefetch files an parses into a report 
 
