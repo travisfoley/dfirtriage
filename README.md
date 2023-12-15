@@ -5,6 +5,8 @@ How to Use
 =
 To run, drop dfirtriage.exe on the target and execute with admin rights, "-h" for help.
 
+TEST
+
 ***************************************************************************************
 
 **DFIRTriage v5.0 User's Manual**
