@@ -4,7 +4,7 @@ Digital forensic acquisition tool for Windows-based incident response.
 
 # How to Use
 
-To run, drop dfirtriage.exe on the target or connected USB drive and execute with admin rights, "-h" for help.
+To run, drop dfirtriage.exe on the target or connected USB drive and execute with admin rights, `-h` for help.
 
 ___
 
@@ -37,7 +37,7 @@ DFIRtriage is an incident response tool designed to provide the Incident Respond
 **Added arguments for individual system artifacts**
 
 - breaking up the system file acquisition option into individual artifacts cuts down on the total file size when you are only wanting one and not all 3.
--` -sdb, --srumdb` (srum database), `-hf, --hiberfil` (hiberfil.sys), `-p, --pagefile` (pagefile.sys)
+` -sdb, --srumdb` (srum database), `-hf, --hiberfil` (hiberfil.sys), `-p, --pagefile` (pagefile.sys)
 
 **Improved executable file hashing capabilites**
 
@@ -63,7 +63,7 @@ DFIRtriage is an incident response tool designed to provide the Incident Respond
 
 - dumping Windows firewall configuration
 - default parsing of key firewall events
-- pulling full firewall event log (EVTX) with -elf argument
+- pulling full firewall event log (EVTX) with `-elf` argument
 
 **Improved user account report**
 
@@ -154,7 +154,7 @@ Local Modifications (Levels 0, 2, 4) (2004, 2005, 2006, 2009, 2033)
 
 ## Dependencies
 
-The tool repository contains the full toolset required for proper execution and is packed into a single a single file named “core.ir”. This “.ir” file is the only required dependency of DFIRtriage when running in Python and should reside in a directory named data, (ie. "./data/core.ir"). The compiled version of DFIRtriage has the full toolset embedded and does not require the addition of the "./data/core.ir" file. 
+The tool repository contains the full toolset required for proper execution and is packed into a single a single file named `core.ir`. This `.ir` file is the only required dependency of DFIRtriage when running in Python and should reside in a directory named data, (ie. `./data/core.ir`). The compiled version of DFIRtriage has the full toolset embedded and does not require the addition of the `./data/core.ir` file. 
 
 
 ## Operation
