@@ -80,8 +80,6 @@ DFIRtriage is an incident response tool designed to provide the Incident Respond
 **External IP**
 
 - Grabs endpoint external IP address
-- if connected to Cisco VPN the external IP address will be the VPN IP address
-- dropping the VPN connection to grap the external IP address interrupts the connection to the XDR live session and terminates DFIRtriage execution.
 
 **PowerShell**
 
