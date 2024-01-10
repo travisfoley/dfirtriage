@@ -35,7 +35,7 @@
 ## FILENAME: DFIRtriage.py                                                 ##
 ## VERSION: 6.0                                                            ##
 ## STATUS: DEV                                                             ##
-## LAST MOD: 12/13/23 @ 8:30 AM                                            ##
+## LAST MOD: 1/10/24 @ 1:36 PM                                             ##
 ## AUTHOR: Travis Foley                                                    ##
 #############################################################################
 
@@ -858,7 +858,7 @@ def evtparse():
     if not os.path.exists(vhd_logfile_src):
         no_vmount = CASEFOLDER + "/LiveResponseData/logs/" + "vhd_mount_log.txt"
         with open(no_vmount, "w") as no_vhd:
-            no_vhd.write("No virtual drive mounts not found on this system.")
+            no_vhd.write("No virtual drive mounts found on this system.")
         no_vhd.close()
         print("[!] Skipping virtual drive mount info, no log found", flush=True)
 
