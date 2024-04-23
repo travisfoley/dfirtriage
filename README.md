@@ -1,6 +1,12 @@
 # **dfirtriage**
 
-Digital forensic acquisition tool for Windows-based incident response.   [DOWNLOAD EXE](https://github.com/travisfoley/dfirtriage/blob/master/binary/DFIRtriage-v6-pub.exe)
+Digital forensic acquisition tool for Windows-based incident response.  
+
+<br>
+
+[**DOWNLOAD EXE**](https://github.com/travisfoley/dfirtriage/blob/master/binary/DFIRtriage-v6-pub.exe)
+
+<br>
 
 # How to Use
 
